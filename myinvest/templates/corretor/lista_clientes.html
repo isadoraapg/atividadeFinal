@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Clientes - MyInvest{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>Meus Clientes</h2>
+    </div>
+    <div class="col text-end">
+        <a href="{% url 'cadastrar_cliente' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Novo Cliente
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                {% if clientes %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>E-mail</th>
+                                    <th>Telefone</th>
+                                    <th>Imóveis de Interesse</th>
+                                    <th>Notificações</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for cliente in clientes %}
+                                    <tr>
+                                        <td>{{ cliente.get_full_name }}</td>
+                                        <td>{{ cliente.email }}</td>
+                                        <td>{{ cliente.telefone }}</td>
+                                        <td>{{ cliente.imoveis_interesse.count }}</td>
+                                        <td>
+                                            {% if cliente.receber_notificacoes %}
+                                                <span class="badge bg-success">Ativo</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">Inativo</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group">
+                                                <a href="{% url 'detalhes_cliente' cliente.id %}" class="btn btn-sm btn-info">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{% url 'editar_cliente' cliente.id %}" class="btn btn-sm btn-warning">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#modalExcluir{{ cliente.id }}">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+
+                                            <!-- Modal de Confirmação de Exclusão -->
+                                            <div class="modal fade" id="modalExcluir{{ cliente.id }}" tabindex="-1">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Confirmar Exclusão</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <p>Tem certeza que deseja excluir o cliente {{ cliente.get_full_name }}?</p>
+                                                            <p class="text-danger">Esta ação não pode ser desfeita.</p>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                            <form method="post" action="{% url 'excluir_cliente' cliente.id %}" class="d-inline">
+                                                                {% csrf_token %}
+                                                                <button type="submit" class="btn btn-danger">Excluir</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> Você ainda não tem clientes cadastrados.
+                        <a href="{% url 'cadastrar_cliente' %}" class="alert-link">Cadastrar novo cliente</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

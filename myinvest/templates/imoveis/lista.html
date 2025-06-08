@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}Imóveis - MyInvest{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>Imóveis Disponíveis</h2>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="localizacao" class="form-label">Localização</label>
+                        <input type="text" class="form-control" id="localizacao" name="localizacao" value="{{ request.GET.localizacao }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="tipo" class="form-label">Tipo</label>
+                        <select class="form-select" id="tipo" name="tipo">
+                            <option value="">Todos</option>
+                            {% for codigo, nome in tipos_imovel %}
+                                <option value="{{ codigo }}" {% if request.GET.tipo == codigo %}selected{% endif %}>{{ nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="preco_min" class="form-label">Preço Mín.</label>
+                        <input type="number" class="form-control" id="preco_min" name="preco_min" value="{{ request.GET.preco_min }}">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="preco_max" class="form-label">Preço Máx.</label>
+                        <input type="number" class="form-control" id="preco_max" name="preco_max" value="{{ request.GET.preco_max }}">
+                    </div>
+                    <div class="col-md-1">
+                        <label for="quartos" class="form-label">Quartos</label>
+                        <input type="number" class="form-control" id="quartos" name="quartos" value="{{ request.GET.quartos }}">
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Filtrar</button>
+                        <a href="{% url 'listar_imoveis' %}" class="btn btn-secondary">Limpar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for imovel in imoveis %}
+        <div class="col">
+            <div class="card h-100">
+                {% if imovel.fotos.exists %}
+                    <img src="{{ imovel.fotos.first.imagem.url }}" class="card-img-top" alt="{{ imovel.titulo }}" style="height: 200px; object-fit: cover;">
+                {% else %}
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <i class="bi bi-house-door" style="font-size: 4rem;"></i>
+                    </div>
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ imovel.titulo }}</h5>
+                    <p class="card-text text-muted">{{ imovel.localizacao }}</p>
+                    <p class="card-text">
+                        <strong>Preço:</strong> R$ {{ imovel.preco|floatformat:2 }}<br>
+                        <strong>Tipo:</strong> {{ imovel.get_tipo_imovel_display }}<br>
+                        <strong>Área:</strong> {{ imovel.area_total }}m²<br>
+                        <strong>Quartos:</strong> {{ imovel.quartos }}<br>
+                        <strong>Status:</strong> {{ imovel.get_status_obra_display }}
+                    </p>
+                    <div class="progress mb-3">
+                        <div class="progress-bar" role="progressbar" style="width: {{ imovel.progresso_obra }}%">
+                            {{ imovel.progresso_obra }}%
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'detalhe_imovel' imovel.id %}" class="btn btn-primary w-100">Ver Detalhes</a>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                Nenhum imóvel encontrado com os filtros selecionados.
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+{% if imoveis.has_other_pages %}
+<nav class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if imoveis.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ imoveis.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Anterior</a>
+            </li>
+        {% endif %}
+
+        {% for num in imoveis.paginator.page_range %}
+            {% if imoveis.number == num %}
+                <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+            {% else %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ num }}</a>
+                </li>
+            {% endif %}
+        {% endfor %}
+
+        {% if imoveis.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ imoveis.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Próxima</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %} 

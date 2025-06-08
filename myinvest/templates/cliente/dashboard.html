@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard do Cliente - MyInvest{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>Dashboard do Cliente</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3 class="card-title mb-0">Meus Imóveis de Interesse</h3>
+            </div>
+            <div class="card-body">
+                <div class="row row-cols-1 row-cols-md-2 g-4">
+                    {% for imovel in imoveis_interesse %}
+                        <div class="col">
+                            <div class="card h-100">
+                                {% if imovel.fotos.exists %}
+                                    <img src="{{ imovel.fotos.first.imagem.url }}" class="card-img-top" alt="{{ imovel.titulo }}" style="height: 200px; object-fit: cover;">
+                                {% else %}
+                                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                        <i class="bi bi-house-door" style="font-size: 4rem;"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ imovel.titulo }}</h5>
+                                    <p class="card-text text-muted">{{ imovel.localizacao }}</p>
+                                    <p class="card-text">
+                                        <strong>Preço:</strong> R$ {{ imovel.preco|floatformat:2 }}<br>
+                                        <strong>Status:</strong> {{ imovel.get_status_obra_display }}
+                                    </p>
+                                    <div class="progress mb-3">
+                                        <div class="progress-bar" role="progressbar" style="width: {{ imovel.progresso_obra }}%">
+                                            {{ imovel.progresso_obra }}%
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="{% url 'detalhe_imovel' imovel.id %}" class="btn btn-primary w-100">Ver Detalhes</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                Você ainda não demonstrou interesse em nenhum imóvel.
+                                <a href="{% url 'listar_imoveis' %}" class="alert-link">Ver imóveis disponíveis</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3 class="card-title mb-0">Notificações</h3>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    {% for notificacao in notificacoes %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">{{ notificacao.titulo }}</h5>
+                                <small>{{ notificacao.data_criacao|date:"d/m/Y H:i" }}</small>
+                            </div>
+                            <p class="mb-1">{{ notificacao.mensagem }}</p>
+                            {% if notificacao.imovel %}
+                                <a href="{% url 'detalhe_imovel' notificacao.imovel.id %}" class="btn btn-sm btn-primary mt-2">
+                                    Ver Imóvel
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% empty %}
+                        <div class="text-center py-3">
+                            Nenhuma notificação no momento.
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">Ações Rápidas</h3>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'listar_imoveis' %}" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Buscar Imóveis
+                    </a>
+                    <a href="{% url 'anunciar_imovel' %}" class="btn btn-success">
+                        <i class="bi bi-house-add"></i> Anunciar Imóvel
+                    </a>
+                    <a href="{% url 'salvar_preferencias' %}" class="btn btn-info">
+                        <i class="bi bi-gear"></i> Configurar Preferências
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

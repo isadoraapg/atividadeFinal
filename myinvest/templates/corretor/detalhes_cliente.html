@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalhes do Cliente - MyInvest{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>Detalhes do Cliente</h2>
+    </div>
+    <div class="col text-end">
+        <a href="{% url 'lista_clientes' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </a>
+        <a href="{% url 'editar_cliente' cliente.id %}" class="btn btn-warning">
+            <i class="fas fa-edit"></i> Editar
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Informações Pessoais</h5>
+                <hr>
+                <p><strong>Nome:</strong> {{ cliente.get_full_name }}</p>
+                <p><strong>E-mail:</strong> {{ cliente.email }}</p>
+                <p><strong>Telefone:</strong> {{ cliente.telefone }}</p>
+                <p>
+                    <strong>Notificações:</strong>
+                    {% if cliente.receber_notificacoes %}
+                        <span class="badge bg-success">Ativo</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Inativo</span>
+                    {% endif %}
+                </p>
+                <p><strong>Data de Cadastro:</strong> {{ cliente.date_joined|date:"d/m/Y" }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Imóveis de Interesse</h5>
+                <hr>
+                {% if cliente.imoveis_interesse.all %}
+                    <div class="row">
+                        {% for imovel in cliente.imoveis_interesse.all %}
+                            <div class="col-md-6 mb-3">
+                                <div class="card h-100">
+                                    {% if imovel.foto_principal %}
+                                        <img src="{{ imovel.foto_principal.url }}" class="card-img-top" alt="{{ imovel.titulo }}">
+                                    {% endif %}
+                                    <div class="card-body">
+                                        <h6 class="card-title">{{ imovel.titulo }}</h6>
+                                        <p class="card-text">
+                                            <small class="text-muted">{{ imovel.localizacao }}</small><br>
+                                            <strong>R$ {{ imovel.preco|floatformat:2 }}</strong>
+                                        </p>
+                                        <a href="{% url 'detalhes_imovel' imovel.id %}" class="btn btn-sm btn-primary">Ver Detalhes</a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> Este cliente ainda não tem imóveis de interesse.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Histórico de Interações</h5>
+                <hr>
+                {% if cliente.notificacoes.all %}
+                    <div class="list-group">
+                        {% for notificacao in cliente.notificacoes.all %}
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ notificacao.titulo }}</h6>
+                                    <small>{{ notificacao.data_criacao|date:"d/m/Y H:i" }}</small>
+                                </div>
+                                <p class="mb-1">{{ notificacao.mensagem }}</p>
+                                {% if notificacao.imovel %}
+                                    <small>
+                                        <a href="{% url 'detalhes_imovel' notificacao.imovel.id %}">
+                                            Ver imóvel relacionado
+                                        </a>
+                                    </small>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> Nenhuma interação registrada.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

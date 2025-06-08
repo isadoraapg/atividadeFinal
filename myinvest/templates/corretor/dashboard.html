@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard do Corretor - MyInvest{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>Dashboard do Corretor</h2>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Total de Imóveis</h5>
+                <h2 class="card-text">{{ imoveis.count }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">Clientes Ativos</h5>
+                <h2 class="card-text">{{ clientes.count }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <h5 class="card-title">Imóveis em Obra</h5>
+                <h2 class="card-text">{{ imoveis_em_obra.count }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="card-title mb-0">Meus Imóveis</h3>
+                <a href="{% url 'cadastrar_imovel' %}" class="btn btn-primary btn-sm">
+                    <i class="bi bi-plus"></i> Novo Imóvel
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Tipo</th>
+                                <th>Status</th>
+                                <th>Progresso</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for imovel in imoveis %}
+                                <tr>
+                                    <td>{{ imovel.titulo }}</td>
+                                    <td>{{ imovel.get_tipo_imovel_display }}</td>
+                                    <td>{{ imovel.get_status_obra_display }}</td>
+                                    <td>
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar" role="progressbar" style="width: {{ imovel.progresso_obra }}%">
+                                                {{ imovel.progresso_obra }}%
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'detalhe_imovel' imovel.id %}" class="btn btn-info btn-sm">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{% url 'editar_imovel' imovel.id %}" class="btn btn-warning btn-sm">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center">Nenhum imóvel cadastrado.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="card-title mb-0">Meus Clientes</h3>
+                <a href="{% url 'cadastrar_cliente' %}" class="btn btn-primary btn-sm">
+                    <i class="bi bi-plus"></i> Novo Cliente
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    {% for cliente in clientes %}
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">{{ cliente }}</h5>
+                                <small>{{ cliente.data_cadastro|date:"d/m/Y" }}</small>
+                            </div>
+                            <p class="mb-1">Telefone: {{ cliente.telefone }}</p>
+                            <small>Imóveis de interesse: {{ cliente.imoveis.count }}</small>
+                        </a>
+                    {% empty %}
+                        <div class="text-center py-3">
+                            Nenhum cliente cadastrado.
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">Ações Rápidas</h3>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'cadastrar_imovel' %}" class="btn btn-primary">
+                        <i class="bi bi-house-add"></i> Cadastrar Imóvel
+                    </a>
+                    <a href="{% url 'cadastrar_cliente' %}" class="btn btn-success">
+                        <i class="bi bi-person-plus"></i> Cadastrar Cliente
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

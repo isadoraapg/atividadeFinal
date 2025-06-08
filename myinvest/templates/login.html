@@ -1,24 +1,35 @@
 <!-- templates/login.html -->
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Login - MyInvest</title>
-</head>
-<body>
-    <h2>Login</h2>
-    {% if messages %}
-        {% for message in messages %}
-            <p style="color: red;">{{ message }}</p>
-        {% endfor %}
-    {% endif %}
-    <form method="post">
-        {% csrf_token %}
-        <label>Usuário:</label><br>
-        <input type="text" name="username"><br>
-        <label>Senha:</label><br>
-        <input type="password" name="password"><br><br>
-        <button type="submit">Entrar</button>
-    </form>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Login - MyInvest{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">Login</h2>
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-danger">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+                <form method="post" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Usuário</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Senha</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Entrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
