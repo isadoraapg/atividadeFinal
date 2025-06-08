@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Área do Corretor</title>
+</head>
+<body>
+    <h1>Bem-vindo, {{ request.user.get_full_name }}!</h1>
+    <p>Você está na área do corretor.</p>
+
+    <ul>
+        <li><a href="{% url 'clientes_corretor' %}">Ver Clientes</a></li>
+        <li><a href="{% url 'adicionar_cliente' %}">Adicionar Cliente</a></li>
+        <li><a href="{% url 'logout' %}">Sair</a></li>
+    </ul>
+</body>
+</html>

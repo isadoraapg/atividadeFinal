@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Adicionar Cliente</title>
+</head>
+<body>
+    <h2>Adicionar novo cliente</h2>
+    <form method="post">
+        {% csrf_token %}
+        <!-- Formulário de cliente (iremos completar depois) -->
+        <p><input type="text" name="nome" placeholder="Nome do cliente"></p>
+        <p><button type="submit">Salvar</button></p>
+    </form>
+    <a href="{% url 'clientes_corretor' %}">← Voltar</a>
+</body>
+</html>

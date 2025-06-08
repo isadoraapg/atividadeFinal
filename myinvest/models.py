@@ -42,6 +42,7 @@ class Cliente(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     telefone = models.CharField("Telefone", max_length=20, blank=True)
     corretor = models.ForeignKey(Corretor, on_delete=models.CASCADE, related_name="clientes")
+    imoveis = models.ManyToManyField(Imovel, related_name='clientes')
 
     def __str__(self):
         return self.user.get_full_name() or self.user.username
