@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Imóvel - MyInvest{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>Editar Imóvel</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.titulo.id_for_label }}" class="form-label">Título</label>
+                        {{ form.titulo.errors }}
+                        <input type="text" class="form-control" id="{{ form.titulo.id_for_label }}" name="{{ form.titulo.html_name }}" value="{{ form.titulo.value|default:'' }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.descricao.id_for_label }}" class="form-label">Descrição</label>
+                        {{ form.descricao.errors }}
+                        <textarea class="form-control" id="{{ form.descricao.id_for_label }}" name="{{ form.descricao.html_name }}" rows="4" required>{{ form.descricao.value|default:'' }}</textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.localizacao.id_for_label }}" class="form-label">Localização</label>
+                                {{ form.localizacao.errors }}
+                                <input type="text" class="form-control" id="{{ form.localizacao.id_for_label }}" name="{{ form.localizacao.html_name }}" value="{{ form.localizacao.value|default:'' }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.preco.id_for_label }}" class="form-label">Preço</label>
+                                {{ form.preco.errors }}
+                                <input type="number" class="form-control" id="{{ form.preco.id_for_label }}" name="{{ form.preco.html_name }}" value="{{ form.preco.value|default:'' }}" step="0.01" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.tipo_imovel.id_for_label }}" class="form-label">Tipo de Imóvel</label>
+                                {{ form.tipo_imovel.errors }}
+                                <select class="form-select" id="{{ form.tipo_imovel.id_for_label }}" name="{{ form.tipo_imovel.html_name }}" required>
+                                    {% for value, label in form.tipo_imovel.field.choices %}
+                                        <option value="{{ value }}" {% if form.tipo_imovel.value == value %}selected{% endif %}>{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.status_obra.id_for_label }}" class="form-label">Status da Obra</label>
+                                {{ form.status_obra.errors }}
+                                <select class="form-select" id="{{ form.status_obra.id_for_label }}" name="{{ form.status_obra.html_name }}" required>
+                                    {% for value, label in form.status_obra.field.choices %}
+                                        <option value="{{ value }}" {% if form.status_obra.value == value %}selected{% endif %}>{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="{{ form.area_total.id_for_label }}" class="form-label">Área Total (m²)</label>
+                                {{ form.area_total.errors }}
+                                <input type="number" class="form-control" id="{{ form.area_total.id_for_label }}" name="{{ form.area_total.html_name }}" value="{{ form.area_total.value|default:'' }}" step="0.01" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="{{ form.quartos.id_for_label }}" class="form-label">Quartos</label>
+                                {{ form.quartos.errors }}
+                                <input type="number" class="form-control" id="{{ form.quartos.id_for_label }}" name="{{ form.quartos.html_name }}" value="{{ form.quartos.value|default:'0' }}" min="0" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="{{ form.banheiros.id_for_label }}" class="form-label">Banheiros</label>
+                                {{ form.banheiros.errors }}
+                                <input type="number" class="form-control" id="{{ form.banheiros.id_for_label }}" name="{{ form.banheiros.html_name }}" value="{{ form.banheiros.value|default:'0' }}" min="0" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.vagas_garagem.id_for_label }}" class="form-label">Vagas de Garagem</label>
+                                {{ form.vagas_garagem.errors }}
+                                <input type="number" class="form-control" id="{{ form.vagas_garagem.id_for_label }}" name="{{ form.vagas_garagem.html_name }}" value="{{ form.vagas_garagem.value|default:'0' }}" min="0" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.progresso_obra.id_for_label }}" class="form-label">Progresso da Obra (%)</label>
+                                {{ form.progresso_obra.errors }}
+                                <input type="number" class="form-control" id="{{ form.progresso_obra.id_for_label }}" name="{{ form.progresso_obra.html_name }}" value="{{ form.progresso_obra.value|default:'0' }}" min="0" max="100" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.data_previsao_entrega.id_for_label }}" class="form-label">Previsão de Entrega</label>
+                        {{ form.data_previsao_entrega.errors }}
+                        <input type="date" class="form-control" id="{{ form.data_previsao_entrega.id_for_label }}" name="{{ form.data_previsao_entrega.html_name }}" value="{{ form.data_previsao_entrega.value|date:'Y-m-d'|default:'' }}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.fotos.id_for_label }}" class="form-label">Fotos do Imóvel</label>
+                        {{ form.fotos.errors }}
+                        <input type="file" class="form-control" id="{{ form.fotos.id_for_label }}" name="{{ form.fotos.html_name }}" multiple accept="image/*">
+                        <div class="form-text">Selecione uma ou mais fotos do imóvel. As fotos existentes serão mantidas se nenhuma nova for selecionada.</div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                        <a href="{% url 'dashboard_corretor' %}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
