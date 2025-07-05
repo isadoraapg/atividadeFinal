@@ -71,8 +71,8 @@
                         <strong>Status:</strong> {{ imovel.get_status_obra_display }}
                     </p>
                     <div class="progress mb-3">
-                        <div class="progress-bar" role="progressbar" style="width: {{ imovel.progresso_obra }}%">
-                            {{ imovel.progresso_obra }}%
+                        <div class="progress-bar" role="progressbar" data-width="{{ imovel.progresso_obra|default:0 }}">
+                            {{ imovel.progresso_obra|default:0 }}%
                         </div>
                     </div>
                 </div>

@@ -66,14 +66,16 @@
                 </ul>
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'notificacoes' %}">
-                                <i class="fas fa-bell"></i>
-                                {% if user.userprofile.notificacoes_nao_lidas > 0 %}
-                                    <span class="badge bg-danger">{{ user.userprofile.notificacoes_nao_lidas }}</span>
-                                {% endif %}
-                            </a>
-                        </li>
+                        {% if user.corretor %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'notificacoes' %}">
+                                    <i class="fas fa-bell"></i>
+                                    {% if user.userprofile.notificacoes_nao_lidas > 0 %}
+                                        <span class="badge bg-danger">{{ user.userprofile.notificacoes_nao_lidas }}</span>
+                                    {% endif %}
+                                </a>
+                            </li>
+                        {% endif %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
                                 {% if user.corretor %}
@@ -82,9 +84,11 @@
                                     <i class="bi bi-person"></i>
                                 {% endif %}
                                 {{ user.get_full_name|default:user.username }}
-                                {% notificacoes_nao_lidas user as num_notificacoes %}
-                                {% if num_notificacoes > 0 %}
-                                    <span class="notification-badge">{{ num_notificacoes }}</span>
+                                {% if user.corretor %}
+                                    {% notificacoes_nao_lidas user as num_notificacoes %}
+                                    {% if num_notificacoes > 0 %}
+                                        <span class="notification-badge">{{ num_notificacoes }}</span>
+                                    {% endif %}
                                 {% endif %}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
@@ -125,7 +129,7 @@
 
     <footer class="bg-light py-4 mt-5">
         <div class="container text-center">
-            <p class="mb-0">&copy; 2024 MyInvest - Todos os direitos reservados</p>
+            <p class="mb-0">&copy; 2025 MyInvest - Todos os direitos reservados</p>
         </div>
     </footer>
 
@@ -157,6 +161,16 @@
                     xhr.setRequestHeader("X-CSRFToken", csrftoken);
                 }
             }
+        });
+
+        // Aplica largura das barras de progresso baseada no atributo data-width
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.progress-bar[data-width]').forEach(function(bar) {
+                const width = bar.getAttribute('data-width');
+                if (width !== null && width !== '') {
+                    bar.style.width = width + '%';
+                }
+            });
         });
     </script>
     {% block extra_js %}{% endblock %}

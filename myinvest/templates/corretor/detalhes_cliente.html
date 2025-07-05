@@ -1,93 +1,93 @@
 {% extends 'base.html' %}
 
-{% block title %}Detalhes do Cliente - MyInvest{% endblock %}
+{% block title %}{{ cliente.user.get_full_name|default:cliente.user.username }} - Detalhes do Cliente{% endblock %}
 
 {% block content %}
 <div class="row mb-4">
     <div class="col">
-        <h2>Detalhes do Cliente</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard_corretor' %}">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ cliente.user.get_full_name|default:cliente.user.username }}</li>
+            </ol>
+        </nav>
     </div>
-    <div class="col text-end">
-        <a href="{% url 'lista_clientes' %}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Voltar
-        </a>
-        <a href="{% url 'editar_cliente' cliente.id %}" class="btn btn-warning">
-            <i class="fas fa-edit"></i> Editar
-        </a>
+</div>
+
+<div class="row mb-4">
+    <div class="col">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2>
+                <i class="bi bi-person-circle"></i> 
+                {{ cliente.user.get_full_name|default:cliente.user.username }}
+            </h2>
+            <div class="btn-group">
+                <a href="{% url 'editar_cliente' cliente.id %}" class="btn btn-warning">
+                    <i class="bi bi-pencil"></i> Editar Cliente
+                </a>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalExcluirCliente">
+                    <i class="bi bi-trash"></i> Excluir Cliente
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
 <div class="row">
     <div class="col-md-4">
         <div class="card mb-4">
-            <div class="card-body">
-                <h5 class="card-title">Informações Pessoais</h5>
-                <hr>
-                <p><strong>Nome:</strong> {{ cliente.get_full_name }}</p>
-                <p><strong>E-mail:</strong> {{ cliente.email }}</p>
-                <p><strong>Telefone:</strong> {{ cliente.telefone }}</p>
-                <p>
-                    <strong>Notificações:</strong>
-                    {% if cliente.receber_notificacoes %}
-                        <span class="badge bg-success">Ativo</span>
-                    {% else %}
-                        <span class="badge bg-secondary">Inativo</span>
-                    {% endif %}
-                </p>
-                <p><strong>Data de Cadastro:</strong> {{ cliente.date_joined|date:"d/m/Y" }}</p>
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-person"></i> Informações Pessoais
+                </h5>
             </div>
-        </div>
-    </div>
-
-    <div class="col-md-8">
-        <div class="card mb-4">
             <div class="card-body">
-                <h5 class="card-title">Imóveis de Interesse</h5>
-                <hr>
-                {% if cliente.imoveis_interesse.all %}
-                    <div class="row">
-                        {% for imovel in cliente.imoveis_interesse.all %}
-                            <div class="col-md-6 mb-3">
-                                <div class="card h-100">
-                                    {% if imovel.foto_principal %}
-                                        <img src="{{ imovel.foto_principal.url }}" class="card-img-top" alt="{{ imovel.titulo }}">
-                                    {% endif %}
-                                    <div class="card-body">
-                                        <h6 class="card-title">{{ imovel.titulo }}</h6>
-                                        <p class="card-text">
-                                            <small class="text-muted">{{ imovel.localizacao }}</small><br>
-                                            <strong>R$ {{ imovel.preco|floatformat:2 }}</strong>
-                                        </p>
-                                        <a href="{% url 'detalhes_imovel' imovel.id %}" class="btn btn-sm btn-primary">Ver Detalhes</a>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle"></i> Este cliente ainda não tem imóveis de interesse.
-                    </div>
-                {% endif %}
+                <div class="mb-3">
+                    <strong>Nome:</strong><br>
+                    {{ cliente.user.get_full_name|default:"Não informado" }}
+                </div>
+                <div class="mb-3">
+                    <strong>E-mail:</strong><br>
+                    <a href="mailto:{{ cliente.user.email }}">{{ cliente.user.email }}</a>
+                </div>
+                <div class="mb-3">
+                    <strong>Telefone:</strong><br>
+                    <a href="tel:{{ cliente.telefone }}">{{ cliente.telefone }}</a>
+                </div>
+                <div class="mb-3">
+                    <strong>Data de Cadastro:</strong><br>
+                    {{ cliente.data_cadastro|date:"d/m/Y H:i" }}
+                </div>
+                <div class="mb-3">
+                    <strong>Receber Notificações:</strong><br>
+                    {% if cliente.receber_notificacoes %}
+                        <span class="badge bg-success">Sim</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Não</span>
+                    {% endif %}
+                </div>
             </div>
         </div>
 
         <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-bell"></i> Últimas Notificações
+                </h5>
+            </div>
             <div class="card-body">
-                <h5 class="card-title">Histórico de Interações</h5>
-                <hr>
-                {% if cliente.notificacoes.all %}
-                    <div class="list-group">
-                        {% for notificacao in cliente.notificacoes.all %}
-                            <div class="list-group-item">
+                {% if notificacoes %}
+                    <div class="list-group list-group-flush">
+                        {% for notificacao in notificacoes %}
+                            <div class="list-group-item px-0">
                                 <div class="d-flex w-100 justify-content-between">
                                     <h6 class="mb-1">{{ notificacao.titulo }}</h6>
-                                    <small>{{ notificacao.data_criacao|date:"d/m/Y H:i" }}</small>
+                                    <small>{{ notificacao.data_criacao|date:"d/m" }}</small>
                                 </div>
-                                <p class="mb-1">{{ notificacao.mensagem }}</p>
+                                <p class="mb-1 text-muted">{{ notificacao.mensagem|truncatechars:50 }}</p>
                                 {% if notificacao.imovel %}
                                     <small>
-                                        <a href="{% url 'detalhes_imovel' notificacao.imovel.id %}">
+                                        <a href="{% url 'detalhe_imovel' notificacao.imovel.id %}">
                                             Ver imóvel relacionado
                                         </a>
                                     </small>
@@ -96,12 +96,142 @@
                         {% endfor %}
                     </div>
                 {% else %}
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle"></i> Nenhuma interação registrada.
+                    <p class="text-muted mb-0">Nenhuma notificação encontrada.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-heart"></i> Imóveis de Interesse ({{ imoveis_interesse.count }})
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if imoveis_interesse %}
+                    <div class="row row-cols-1 row-cols-md-2 g-4">
+                        {% for imovel in imoveis_interesse %}
+                            <div class="col">
+                                <div class="card h-100">
+                                    {% if imovel.fotos.exists %}
+                                        <img src="{{ imovel.fotos.first.imagem.url }}" class="card-img-top" alt="{{ imovel.titulo }}" style="height: 200px; object-fit: cover;">
+                                    {% else %}
+                                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                            <i class="bi bi-house-door" style="font-size: 4rem;"></i>
+                                        </div>
+                                    {% endif %}
+                                    <div class="card-body">
+                                        <h6 class="card-title">{{ imovel.titulo }}</h6>
+                                        <p class="card-text text-muted">{{ imovel.localizacao }}</p>
+                                        <p class="card-text">
+                                            <strong>Preço:</strong> R$ {{ imovel.preco|floatformat:2 }}<br>
+                                            <strong>Tipo:</strong> {{ imovel.get_tipo_imovel_display }}<br>
+                                            <strong>Status:</strong> {{ imovel.get_status_obra_display }}
+                                        </p>
+                                        <div class="progress mb-3">
+                                            <div class="progress-bar" role="progressbar" data-width="{{ imovel.progresso_obra|default:0 }}">
+                                                {{ imovel.progresso_obra|default:0 }}%
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <div class="d-grid gap-2">
+                                            <a href="{% url 'detalhe_imovel' imovel.id %}" class="btn btn-primary btn-sm">
+                                                <i class="bi bi-eye"></i> Ver Detalhes
+                                            </a>
+                                            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#enviarImovelModal{{ imovel.id }}">
+                                                <i class="bi bi-send"></i> Enviar para Cliente
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-heart text-muted" style="font-size: 4rem;"></i>
+                        <h5 class="text-muted mt-3">Nenhum imóvel de interesse</h5>
+                        <p class="text-muted">Este cliente ainda não demonstrou interesse em nenhum imóvel.</p>
                     </div>
                 {% endif %}
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modal de Confirmação de Exclusão -->
+<div class="modal fade" id="modalExcluirCliente" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja excluir o cliente <strong>{{ cliente.user.get_full_name|default:cliente.user.username }}</strong>?</p>
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <strong>Atenção:</strong> Esta ação não pode ser desfeita e removerá:
+                    <ul class="mb-0 mt-2">
+                        <li>Todos os dados do cliente</li>
+                        <li>Histórico de interesses em imóveis</li>
+                        <li>Todas as notificações relacionadas</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form method="post" action="{% url 'excluir_cliente' cliente.id %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Confirmar Exclusão
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modais para enviar imóveis -->
+{% for imovel in imoveis_interesse %}
+    <div class="modal fade" id="enviarImovelModal{{ imovel.id }}" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Enviar Imóvel para {{ cliente.user.get_full_name|default:cliente.user.username }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form method="post" action="{% url 'enviar_imovel_cliente' imovel.id %}">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="cliente{{ imovel.id }}" class="form-label">Cliente</label>
+                            <select class="form-select" id="cliente{{ imovel.id }}" name="cliente_id" required>
+                                <option value="{{ cliente.id }}" selected>{{ cliente.user.get_full_name|default:cliente.user.username }}</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="mensagem{{ imovel.id }}" class="form-label">Mensagem (opcional)</label>
+                            <textarea class="form-control" id="mensagem{{ imovel.id }}" name="mensagem" rows="3" placeholder="Digite uma mensagem personalizada para o cliente..."></textarea>
+                        </div>
+                        <div class="alert alert-info">
+                            <strong>Imóvel:</strong> {{ imovel.titulo }}<br>
+                            <strong>Localização:</strong> {{ imovel.localizacao }}<br>
+                            <strong>Preço:</strong> R$ {{ imovel.preco|floatformat:2 }}
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-send"></i> Enviar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endfor %}
 {% endblock %} 

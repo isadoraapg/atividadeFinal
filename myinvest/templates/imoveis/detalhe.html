@@ -99,9 +99,11 @@
                 <h3 class="card-title">Preço</h3>
                 <h2 class="text-primary mb-3">R$ {{ imovel.preco|floatformat:2 }}</h2>
                 {% if user.is_authenticated and user.cliente %}
-                    <form method="post" action="{% url 'detalhe_imovel' imovel.id %}">
+                    <form method="post" action="{% url 'detalhe_imovel' imovel.id %}" id="formInteresse">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-primary w-100 mb-2">Demonstrar Interesse</button>
+                        <button type="submit" class="btn btn-primary w-100 mb-2" id="btnInteresse">
+                            <i class="bi bi-heart"></i> Demonstrar Interesse
+                        </button>
                     </form>
                 {% elif not user.is_authenticated %}
                     <a href="{% url 'login' %}" class="btn btn-primary w-100 mb-2">Login para Demonstrar Interesse</a>
@@ -119,6 +121,20 @@
         </div>
 
         {% if user.is_authenticated and user.corretor == imovel.corretor %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h3 class="card-title">Ações do Corretor</h3>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'editar_imovel' imovel.id %}" class="btn btn-warning">
+                            <i class="bi bi-pencil"></i> Editar Imóvel
+                        </a>
+                        <a href="{% url 'excluir_imovel' imovel.id %}" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Excluir Imóvel
+                        </a>
+                    </div>
+                </div>
+            </div>
+
             <div class="card">
                 <div class="card-body">
                     <h3 class="card-title">Atualizar Status</h3>
@@ -152,5 +168,62 @@
         'resizeDuration': 200,
         'wrapAround': true
     });
+
+    // Feedback imediato para demonstração de interesse
+    document.addEventListener('DOMContentLoaded', function() {
+        const formInteresse = document.getElementById('formInteresse');
+        const btnInteresse = document.getElementById('btnInteresse');
+        
+        if (formInteresse && btnInteresse) {
+            formInteresse.addEventListener('submit', function(e) {
+                // Mostrar feedback visual imediato
+                btnInteresse.innerHTML = '<i class="bi bi-heart-fill text-danger"></i> Interesse Demonstrado!';
+                btnInteresse.classList.remove('btn-primary');
+                btnInteresse.classList.add('btn-success');
+                btnInteresse.disabled = true;
+                
+                // Adicionar animação de pulse
+                btnInteresse.style.animation = 'pulse 0.6s ease-in-out';
+                
+                // Mostrar toast de confirmação
+                const toast = document.createElement('div');
+                toast.className = 'position-fixed top-0 end-0 p-3';
+                toast.style.zIndex = '9999';
+                toast.innerHTML = `
+                    <div class="toast show" role="alert">
+                        <div class="toast-header bg-success text-white">
+                            <i class="bi bi-check-circle me-2"></i>
+                            <strong class="me-auto">Sucesso!</strong>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                        </div>
+                        <div class="toast-body">
+                            Interesse demonstrado com sucesso! O corretor será notificado.
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(toast);
+                
+                // Remover toast após 3 segundos
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, 3000);
+            });
+        }
+    });
 </script>
+
+<style>
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+    
+    .btn:disabled {
+        opacity: 0.8;
+        cursor: not-allowed;
+    }
+</style>
 {% endblock %} 

@@ -83,6 +83,7 @@ class Notificacao(models.Model):
         ('obra', 'Atualização de Obra'),
         ('novo_imovel', 'Novo Imóvel'),
         ('status', 'Mudança de Status'),
+        ('recomendacao', 'Recomendação de Cliente'),
     ]
 
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notificacoes")
