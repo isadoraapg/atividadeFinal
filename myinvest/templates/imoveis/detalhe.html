@@ -169,23 +169,19 @@
         'wrapAround': true
     });
 
-    // Feedback imediato para demonstração de interesse
     document.addEventListener('DOMContentLoaded', function() {
         const formInteresse = document.getElementById('formInteresse');
         const btnInteresse = document.getElementById('btnInteresse');
         
         if (formInteresse && btnInteresse) {
             formInteresse.addEventListener('submit', function(e) {
-                // Mostrar feedback visual imediato
                 btnInteresse.innerHTML = '<i class="bi bi-heart-fill text-danger"></i> Interesse Demonstrado!';
                 btnInteresse.classList.remove('btn-primary');
                 btnInteresse.classList.add('btn-success');
                 btnInteresse.disabled = true;
                 
-                // Adicionar animação de pulse
                 btnInteresse.style.animation = 'pulse 0.6s ease-in-out';
                 
-                // Mostrar toast de confirmação
                 const toast = document.createElement('div');
                 toast.className = 'position-fixed top-0 end-0 p-3';
                 toast.style.zIndex = '9999';
@@ -203,7 +199,6 @@
                 `;
                 document.body.appendChild(toast);
                 
-                // Remover toast após 3 segundos
                 setTimeout(() => {
                     if (toast.parentNode) {
                         toast.parentNode.removeChild(toast);

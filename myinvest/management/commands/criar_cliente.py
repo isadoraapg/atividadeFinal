@@ -18,12 +18,10 @@ class Command(BaseCommand):
         try:
             user = User.objects.get(username=username)
             
-            # Verifica se o usuário já é um cliente
             if hasattr(user, 'cliente'):
                 self.stdout.write(self.style.ERROR(f'Usuário {username} já é um cliente.'))
                 return
 
-            # Busca o corretor
             try:
                 corretor_user = User.objects.get(username=corretor_username)
                 corretor = Corretor.objects.get(user=corretor_user)
@@ -31,7 +29,6 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.ERROR(f'Corretor {corretor_username} não encontrado.'))
                 return
 
-            # Cria o perfil de cliente
             cliente = Cliente.objects.create(
                 user=user,
                 telefone=telefone,
