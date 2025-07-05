@@ -23,7 +23,6 @@ urlpatterns = [
     path('corretor/clientes/<int:cliente_id>/editar/', views.editar_cliente, name='editar_cliente'),
     path('corretor/clientes/<int:cliente_id>/excluir/', views.excluir_cliente, name='excluir_cliente'),
     
-    # Rotas de Imóveis
     path('imoveis/', views.listar_imoveis, name='listar_imoveis'),
     path('imoveis/<int:imovel_id>/', views.detalhe_imovel, name='detalhe_imovel'),
     path('imoveis/<int:imovel_id>/status/', views.atualizar_status_obra, name='atualizar_status_obra'),

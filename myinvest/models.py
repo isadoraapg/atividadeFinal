@@ -54,9 +54,6 @@ class Imovel(models.Model):
 
     def __str__(self):
         return f"{self.titulo} - {self.localizacao}"
-fotos={
-    
-}
 class FotoImovel(models.Model):
     imovel = models.ForeignKey(Imovel, on_delete=models.CASCADE, related_name="fotos")
     imagem = models.ImageField("Imagem", upload_to="imoveis_fotos/")
@@ -133,5 +130,3 @@ def create_user_profile(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     instance.userprofile.save()
-
-# ... existing code ...

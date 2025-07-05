@@ -18,12 +18,10 @@ class Command(BaseCommand):
         try:
             user = User.objects.get(username=username)
             
-            # Verifica se o usuário já é um corretor
             if hasattr(user, 'corretor'):
                 self.stdout.write(self.style.ERROR(f'Usuário {username} já é um corretor.'))
                 return
 
-            # Cria o perfil de corretor
             corretor = Corretor.objects.create(
                 user=user,
                 telefone=telefone,

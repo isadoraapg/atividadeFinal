@@ -22,11 +22,9 @@ def login_view(request):
         if user is not None:
             login(request, user)
             
-            # Garante que o perfil do usuário existe
             if not hasattr(user, 'userprofile'):
                 UserProfile.objects.create(user=user)
             
-            # Verifica o tipo de usuário e redireciona
             if hasattr(user, 'corretor'):
                 return redirect('dashboard_corretor')
             elif hasattr(user, 'cliente'):
@@ -60,7 +58,6 @@ def area_corretor_view(request):
     return render(request, 'corretor/area_corretor.html')
 
 def lista_clientes_view(request):
-    # Mostra todos os imóveis e seus respectivos clientes (sem depender do corretor logado)
     dados = []
     imoveis = Imovel.objects.all()
 
@@ -69,17 +66,6 @@ def lista_clientes_view(request):
         dados.append((imovel, clientes))
 
     return render(request, 'corretor/clientes.html', {'dados': dados, 'now': timezone.now()})
-
-# def lista_clientes_view(request):
-#     corretor = request.user.corretor  # assumindo que Corretor está relacionado ao User
-#     imoveis = Imovel.objects.filter(corretor=corretor)
-
-#     dados = []
-#     for imovel in imoveis:
-#         clientes = Cliente.objects.filter(imoveis=imovel)
-#         dados.append((imovel, clientes))
-
-#     return render(request, 'corretor/clientes.html', {'dados': dados, 'now': timezone.now()})
 
 def adicionar_cliente_view(request):
     return render(request, 'corretor/adicionar_cliente.html')
@@ -105,7 +91,6 @@ def dashboard_corretor(request):
     imoveis = Imovel.objects.filter(corretor=corretor)
     clientes = Cliente.objects.filter(corretor=corretor)
     
-    # Filtrar imóveis em obra
     imoveis_em_obra = imoveis.filter(status_obra__in=['fundacao', 'estrutura', 'acabamento'])
     
     context = {
@@ -118,7 +103,6 @@ def dashboard_corretor(request):
 def listar_imoveis(request):
     imoveis = Imovel.objects.filter(disponivel=True)
     
-    # Filtros
     localizacao = request.GET.get('localizacao')
     tipo = request.GET.get('tipo')
     preco_min = request.GET.get('preco_min')
@@ -151,7 +135,6 @@ def detalhe_imovel(request, imovel_id):
     fotos = imovel.fotos.all()
     cronograma = imovel.cronograma.all().order_by('data_inicio')
     
-    # Processar demonstração de interesse
     if request.method == 'POST' and request.user.is_authenticated and hasattr(request.user, 'cliente'):
         cliente = request.user.cliente
         if imovel not in cliente.imoveis.all():
@@ -181,7 +164,6 @@ def cadastrar_imovel(request):
             imovel.corretor = request.user.corretor
             imovel.save()
             
-            # Processar múltiplas fotos
             fotos = request.FILES.getlist('fotos')
             for foto in fotos:
                 FotoImovel.objects.create(
@@ -224,13 +206,11 @@ def excluir_imovel(request, imovel_id):
         return redirect('home')
     
     if request.method == 'POST':
-        # Excluir fotos do imóvel
         for foto in imovel.fotos.all():
             if foto.imagem:
                 foto.imagem.delete(save=False)
             foto.delete()
         
-        # Excluir o imóvel
         imovel.delete()
         messages.success(request, 'Imóvel excluído com sucesso!')
         return redirect('dashboard_corretor')
@@ -273,7 +253,6 @@ def atualizar_status_obra(request, imovel_id):
             imovel.progresso_obra = novo_progresso
             imovel.save()
             
-            # Notificar clientes interessados
             for cliente in imovel.clientes.all():
                 if cliente.receber_notificacoes:
                     Notificacao.objects.create(
@@ -328,12 +307,10 @@ def marcar_notificacao_lida(request, notificacao_id):
     notificacao.lida = True
     notificacao.save()
     
-    # Redirecionar de volta para a página de onde veio
     referer = request.META.get('HTTP_REFERER')
     if referer:
         return redirect(referer)
     else:
-        # Fallback para dashboard do cliente ou corretor
         if hasattr(request.user, 'cliente'):
             return redirect('dashboard_cliente')
         elif hasattr(request.user, 'corretor'):
@@ -377,14 +354,12 @@ def editar_cliente(request, cliente_id):
         return redirect('dashboard_corretor')
     
     if request.method == 'POST':
-        # Atualizar dados do usuário
         user = cliente.user
         user.first_name = request.POST.get('user.first_name', '')
         user.last_name = request.POST.get('user.last_name', '')
         user.email = request.POST.get('user.email', '')
         user.save()
         
-        # Atualizar dados do cliente
         cliente.telefone = request.POST.get('telefone', '')
         cliente.receber_notificacoes = request.POST.get('receber_notificacoes') == 'on'
         cliente.save()
@@ -424,7 +399,6 @@ def enviar_imovel_cliente(request, imovel_id):
     imovel = get_object_or_404(Imovel, id=imovel_id)
     corretor = request.user.corretor
     
-    # Verificar se o corretor é responsável pelo imóvel
     if imovel.corretor != corretor:
         messages.error(request, 'Você só pode enviar imóveis que você cadastrou.')
         return redirect('dashboard_corretor')
@@ -436,12 +410,10 @@ def enviar_imovel_cliente(request, imovel_id):
         try:
             cliente_destinatario = Cliente.objects.get(id=cliente_destinatario_id)
             
-            # Verificar se o cliente pertence ao corretor
             if cliente_destinatario.corretor != corretor:
                 messages.error(request, 'Você só pode enviar imóveis para seus próprios clientes.')
                 return redirect('dashboard_corretor')
             
-            # Criar notificação para o cliente destinatário
             titulo = f'🏠 Imóvel recomendado: {imovel.titulo}'
             mensagem_padrao = f'O corretor {corretor.user.get_full_name() or corretor.user.username} recomendou este imóvel para você.\n\n📍 Localização: {imovel.localizacao}\n💰 Preço: R$ {imovel.preco:,.2f}\n🏗️ Status: {imovel.get_status_obra_display()}'
             
