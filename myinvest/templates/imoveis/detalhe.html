@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ imovel.titulo }} - MyInvest{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightbox2@2.11.3/dist/css/lightbox.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div id="carouselImovel" class="carousel slide mb-4" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                {% for foto in fotos %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        <a href="{{ foto.imagem.url }}" data-lightbox="imovel-gallery" data-title="{{ foto.legenda|default:imovel.titulo }}">
+                            <img src="{{ foto.imagem.url }}" class="d-block w-100" alt="{{ foto.legenda|default:imovel.titulo }}" style="height: 400px; object-fit: cover;">
+                        </a>
+                    </div>
+                {% empty %}
+                    <div class="carousel-item active">
+                        <div class="d-block w-100 bg-light d-flex align-items-center justify-content-center" style="height: 400px;">
+                            <i class="bi bi-house-door" style="font-size: 8rem;"></i>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            {% if fotos|length > 1 %}
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselImovel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselImovel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                </button>
+            {% endif %}
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 class="card-title">{{ imovel.titulo }}</h2>
+                <p class="text-muted">{{ imovel.localizacao }}</p>
+                <p class="card-text">{{ imovel.descricao }}</p>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3 class="card-title">Características</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li><strong>Tipo:</strong> {{ imovel.get_tipo_imovel_display }}</li>
+                            <li><strong>Área Total:</strong> {{ imovel.area_total }}m²</li>
+                            <li><strong>Quartos:</strong> {{ imovel.quartos }}</li>
+                            <li><strong>Banheiros:</strong> {{ imovel.banheiros }}</li>
+                            <li><strong>Vagas de Garagem:</strong> {{ imovel.vagas_garagem }}</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li><strong>Status da Obra:</strong> {{ imovel.get_status_obra_display }}</li>
+                            <li><strong>Progresso:</strong> {{ imovel.progresso_obra }}%</li>
+                            {% if imovel.data_previsao_entrega %}
+                                <li><strong>Previsão de Entrega:</strong> {{ imovel.data_previsao_entrega|date:"d/m/Y" }}</li>
+                            {% endif %}
+                            <li><strong>Data de Cadastro:</strong> {{ imovel.data_cadastro|date:"d/m/Y" }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if cronograma %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h3 class="card-title">Cronograma da Obra</h3>
+                    <div class="timeline">
+                        {% for fase in cronograma %}
+                            <div class="timeline-item {% if fase.concluido %}completed{% endif %}">
+                                <div class="timeline-marker"></div>
+                                <div class="timeline-content">
+                                    <h4>{{ fase.fase }}</h4>
+                                    <p>{{ fase.descricao }}</p>
+                                    <small class="text-muted">
+                                        {{ fase.data_inicio|date:"d/m/Y" }} - {{ fase.data_fim|date:"d/m/Y" }}
+                                    </small>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3 class="card-title">Preço</h3>
+                <h2 class="text-primary mb-3">R$ {{ imovel.preco|floatformat:2 }}</h2>
+                {% if user.is_authenticated and user.cliente %}
+                    <form method="post" action="{% url 'detalhe_imovel' imovel.id %}" id="formInteresse">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary w-100 mb-2" id="btnInteresse">
+                            <i class="bi bi-heart"></i> Demonstrar Interesse
+                        </button>
+                    </form>
+                {% elif not user.is_authenticated %}
+                    <a href="{% url 'login' %}" class="btn btn-primary w-100 mb-2">Login para Demonstrar Interesse</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3 class="card-title">Corretor Responsável</h3>
+                <p class="mb-1"><strong>Nome:</strong> {{ imovel.corretor }}</p>
+                <p class="mb-1"><strong>CRECI:</strong> {{ imovel.corretor.creci }}</p>
+                <p class="mb-0"><strong>Telefone:</strong> {{ imovel.corretor.telefone }}</p>
+            </div>
+        </div>
+
+        {% if user.is_authenticated and user.corretor == imovel.corretor %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h3 class="card-title">Ações do Corretor</h3>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'editar_imovel' imovel.id %}" class="btn btn-warning">
+                            <i class="bi bi-pencil"></i> Editar Imóvel
+                        </a>
+                        <a href="{% url 'excluir_imovel' imovel.id %}" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Excluir Imóvel
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title">Atualizar Status</h3>
+                    <form method="post" action="{% url 'atualizar_status_obra' imovel.id %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-select" id="status" name="status" required>
+                                {% for codigo, nome in imovel.STATUS_OPCOES %}
+                                    <option value="{{ codigo }}" {% if imovel.status_obra == codigo %}selected{% endif %}>{{ nome }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="progresso" class="form-label">Progresso (%)</label>
+                            <input type="number" class="form-control" id="progresso" name="progresso" min="0" max="100" value="{{ imovel.progresso_obra }}" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Atualizar</button>
+                    </form>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/lightbox2@2.11.3/dist/js/lightbox.min.js"></script>
+<script>
+    lightbox.option({
+        'resizeDuration': 200,
+        'wrapAround': true
+    });
+
+    // Feedback imediato para demonstração de interesse
+    document.addEventListener('DOMContentLoaded', function() {
+        const formInteresse = document.getElementById('formInteresse');
+        const btnInteresse = document.getElementById('btnInteresse');
+        
+        if (formInteresse && btnInteresse) {
+            formInteresse.addEventListener('submit', function(e) {
+                // Mostrar feedback visual imediato
+                btnInteresse.innerHTML = '<i class="bi bi-heart-fill text-danger"></i> Interesse Demonstrado!';
+                btnInteresse.classList.remove('btn-primary');
+                btnInteresse.classList.add('btn-success');
+                btnInteresse.disabled = true;
+                
+                // Adicionar animação de pulse
+                btnInteresse.style.animation = 'pulse 0.6s ease-in-out';
+                
+                // Mostrar toast de confirmação
+                const toast = document.createElement('div');
+                toast.className = 'position-fixed top-0 end-0 p-3';
+                toast.style.zIndex = '9999';
+                toast.innerHTML = `
+                    <div class="toast show" role="alert">
+                        <div class="toast-header bg-success text-white">
+                            <i class="bi bi-check-circle me-2"></i>
+                            <strong class="me-auto">Sucesso!</strong>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                        </div>
+                        <div class="toast-body">
+                            Interesse demonstrado com sucesso! O corretor será notificado.
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(toast);
+                
+                // Remover toast após 3 segundos
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, 3000);
+            });
+        }
+    });
+</script>
+
+<style>
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+    
+    .btn:disabled {
+        opacity: 0.8;
+        cursor: not-allowed;
+    }
+</style>
+{% endblock %} 

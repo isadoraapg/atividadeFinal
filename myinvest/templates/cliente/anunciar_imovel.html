@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Anunciar Imóvel{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Anunciar Imóvel</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Anunciar</button>
+    </form>
+</div>
+{% endblock %} 

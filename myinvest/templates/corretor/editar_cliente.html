@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Cliente - {{ cliente.user.get_full_name|default:cliente.user.username }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard_corretor' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'detalhes_cliente' cliente.id %}">{{ cliente.user.get_full_name|default:cliente.user.username }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Editar</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">
+                    <i class="bi bi-pencil"></i> Editar Cliente
+                </h3>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="first_name" class="form-label">Nome</label>
+                                <input type="text" class="form-control" id="first_name" name="user.first_name" value="{{ cliente.user.first_name }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="last_name" class="form-label">Sobrenome</label>
+                                <input type="text" class="form-control" id="last_name" name="user.last_name" value="{{ cliente.user.last_name }}" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">E-mail</label>
+                        <input type="email" class="form-control" id="email" name="user.email" value="{{ cliente.user.email }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="telefone" class="form-label">Telefone</label>
+                        <input type="tel" class="form-control" id="telefone" name="telefone" value="{{ cliente.telefone }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="receber_notificacoes" name="receber_notificacoes" {% if cliente.receber_notificacoes %}checked{% endif %}>
+                            <label class="form-check-label" for="receber_notificacoes">
+                                Cliente deseja receber notificações
+                            </label>
+                        </div>
+                        <div class="form-text">Marque esta opção se o cliente quiser receber notificações sobre imóveis e atualizações.</div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check"></i> Salvar Alterações
+                        </button>
+                        <a href="{% url 'detalhes_cliente' cliente.id %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

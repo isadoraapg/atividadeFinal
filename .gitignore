@@ -1,3 +1,56 @@
-.venv
-venv
+# Ambiente virtual
+.venv/
+venv/
 /venv
+
+# Arquivos de configuração de ambiente
+.env
+.env.*
+
+# Arquivos de banco de dados
+*.sqlite3
+db.sqlite3
+
+# Arquivos de cache e temporários
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# Diretórios de mídia e estáticos gerados
+/media/
+/staticfiles/
+
+# Arquivos do sistema operacional
+.DS_Store
+Thumbs.db
+
+# Arquivos do VSCode e Cursor
+.vscode/
+.cursor/
+
+# Arquivos de testes
+coverage.xml
+htmlcov/
+
+# Arquivos de pacotes Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Arquivos de migração antigos
+*.orig
+
+# Outros
+*.~*

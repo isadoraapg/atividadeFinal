@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Excluir Cliente - {{ cliente.user.get_full_name|default:cliente.user.username }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard_corretor' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'detalhes_cliente' cliente.id %}">{{ cliente.user.get_full_name|default:cliente.user.username }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Excluir</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mx-auto">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h3 class="card-title mb-0">
+                    <i class="bi bi-exclamation-triangle"></i> Confirmar Exclusão
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <i class="bi bi-person-x text-danger" style="font-size: 4rem;"></i>
+                </div>
+                
+                <h5 class="text-center mb-3">
+                    Excluir cliente <strong>{{ cliente.user.get_full_name|default:cliente.user.username }}</strong>?
+                </h5>
+                
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <strong>Atenção:</strong> Esta ação não pode ser desfeita e removerá permanentemente:
+                    <ul class="mb-0 mt-2">
+                        <li>Todos os dados pessoais do cliente</li>
+                        <li>Histórico de interesses em imóveis</li>
+                        <li>Todas as notificações relacionadas</li>
+                        <li>Preferências e configurações</li>
+                    </ul>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6>Informações do Cliente:</h6>
+                        <p class="mb-1"><strong>Nome:</strong> {{ cliente.user.get_full_name|default:cliente.user.username }}</p>
+                        <p class="mb-1"><strong>E-mail:</strong> {{ cliente.user.email }}</p>
+                        <p class="mb-1"><strong>Telefone:</strong> {{ cliente.telefone }}</p>
+                        <p class="mb-0"><strong>Imóveis de interesse:</strong> {{ cliente.imoveis.count }}</p>
+                    </div>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Confirmar Exclusão
+                        </button>
+                        <a href="{% url 'detalhes_cliente' cliente.id %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

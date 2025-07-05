@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Notificações{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Minhas Notificações</h2>
+    
+    {% if notificacoes %}
+        <div class="list-group">
+            {% for notificacao in notificacoes %}
+                <div class="list-group-item {% if not notificacao.lida %}list-group-item-primary{% endif %}">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">{{ notificacao.titulo }}</h5>
+                        <small>{{ notificacao.data_criacao|date:"d/m/Y H:i" }}</small>
+                    </div>
+                    <p class="mb-1">{{ notificacao.mensagem }}</p>
+                    {% if not notificacao.lida %}
+                        <form method="post" action="{% url 'marcar_notificacao_lida' notificacao.id %}" class="mt-2">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-primary">Marcar como lida</button>
+                        </form>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            Você não tem notificações.
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard do Corretor - MyInvest{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>Dashboard do Corretor</h2>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Total de Imóveis</h5>
+                <h2 class="card-text">{{ imoveis.count }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">Clientes Ativos</h5>
+                <h2 class="card-text">{{ clientes.count }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <h5 class="card-title">Imóveis em Obra</h5>
+                <h2 class="card-text">{{ imoveis_em_obra.count }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="card-title mb-0">Meus Imóveis</h3>
+                <a href="{% url 'cadastrar_imovel' %}" class="btn btn-primary btn-sm">
+                    <i class="bi bi-plus"></i> Novo Imóvel
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Tipo</th>
+                                <th>Status</th>
+                                <th>Progresso</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for imovel in imoveis %}
+                                <tr>
+                                    <td>{{ imovel.titulo }}</td>
+                                    <td>{{ imovel.get_tipo_imovel_display }}</td>
+                                    <td>{{ imovel.get_status_obra_display }}</td>
+                                    <td>
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar" role="progressbar" style="width: {{ imovel.progresso_obra }}%">
+                                                {{ imovel.progresso_obra }}%
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'detalhe_imovel' imovel.id %}" class="btn btn-info btn-sm">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{% url 'editar_imovel' imovel.id %}" class="btn btn-warning btn-sm">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a href="{% url 'excluir_imovel' imovel.id %}" class="btn btn-danger btn-sm">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#enviarImovelModal{{ imovel.id }}">
+                                            <i class="bi bi-send"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center">Nenhum imóvel cadastrado.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="card-title mb-0">Meus Clientes</h3>
+                <a href="{% url 'cadastrar_cliente' %}" class="btn btn-primary btn-sm">
+                    <i class="bi bi-plus"></i> Novo Cliente
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    {% for cliente in clientes %}
+                        <a href="{% url 'detalhes_cliente' cliente.id %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">{{ cliente.user.get_full_name|default:cliente.user.username }}</h5>
+                                <small>{{ cliente.data_cadastro|date:"d/m/Y" }}</small>
+                            </div>
+                            <p class="mb-1">
+                                <i class="bi bi-telephone"></i> {{ cliente.telefone }}
+                            </p>
+                            <small>
+                                <i class="bi bi-heart"></i> {{ cliente.imoveis.count }} imóvel{{ cliente.imoveis.count|pluralize:"es" }} de interesse
+                            </small>
+                        </a>
+                    {% empty %}
+                        <div class="text-center py-3">
+                            <i class="bi bi-people text-muted" style="font-size: 2rem;"></i>
+                            <p class="text-muted mt-2">Nenhum cliente cadastrado.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">Ações Rápidas</h3>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'cadastrar_imovel' %}" class="btn btn-primary">
+                        <i class="bi bi-house-add"></i> Cadastrar Imóvel
+                    </a>
+                    <a href="{% url 'cadastrar_cliente' %}" class="btn btn-success">
+                        <i class="bi bi-person-plus"></i> Cadastrar Cliente
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modais para enviar imóveis -->
+{% for imovel in imoveis %}
+    <div class="modal fade" id="enviarImovelModal{{ imovel.id }}" tabindex="-1" aria-labelledby="enviarImovelModalLabel{{ imovel.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="enviarImovelModalLabel{{ imovel.id }}">Enviar Imóvel para Cliente</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post" action="{% url 'enviar_imovel_cliente' imovel.id %}">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="cliente{{ imovel.id }}" class="form-label">Selecionar Cliente</label>
+                            <select class="form-select" id="cliente{{ imovel.id }}" name="cliente_id" required>
+                                <option value="">Escolha um cliente...</option>
+                                {% for cliente in clientes %}
+                                    <option value="{{ cliente.id }}">{{ cliente.user.get_full_name|default:cliente.user.username }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="mensagem{{ imovel.id }}" class="form-label">Mensagem (opcional)</label>
+                            <textarea class="form-control" id="mensagem{{ imovel.id }}" name="mensagem" rows="3" placeholder="Digite uma mensagem personalizada para o cliente..."></textarea>
+                        </div>
+                        <div class="alert alert-info">
+                            <strong>Imóvel:</strong> {{ imovel.titulo }}<br>
+                            <strong>Localização:</strong> {{ imovel.localizacao }}<br>
+                            <strong>Preço:</strong> R$ {{ imovel.preco|floatformat:2 }}
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-send"></i> Enviar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+{% endblock %} 
