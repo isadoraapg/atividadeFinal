@@ -24,8 +24,8 @@ git clone https://github.com/isadoraapg/atividadeFinal.git
 **2. Crie um ambiente virtual:**
 python -m venv venv
 
-**3. Ative o ambiente virtual:**
-.\venv\Scripts\activate     # no Windows
+**3. Ative o ambiente virtual (no Windows):**
+.\venv\Scripts\activate    
 
 **4. Instale as dependências:**
 python.exe -m pip install --upgrade pip
