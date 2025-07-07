@@ -11,24 +11,27 @@
 
 <div class="row mb-4">
     <div class="col-md-4">
-        <div class="card text-white bg-primary">
-            <div class="card-body">
+        <div class="card card-resumo mb-3">
+            <div class="card-body position-relative">
+                <span class="icon"><i class="bi bi-building"></i></span>
                 <h5 class="card-title">Total de Imóveis</h5>
                 <h2 class="card-text">{{ imoveis.count }}</h2>
             </div>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card text-white bg-success">
-            <div class="card-body">
+        <div class="card card-resumo mb-3">
+            <div class="card-body position-relative">
+                <span class="icon"><i class="bi bi-people"></i></span>
                 <h5 class="card-title">Clientes Ativos</h5>
                 <h2 class="card-text">{{ clientes.count }}</h2>
             </div>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card text-white bg-info">
-            <div class="card-body">
+        <div class="card card-resumo mb-3">
+            <div class="card-body position-relative">
+                <span class="icon"><i class="bi bi-hammer"></i></span>
                 <h5 class="card-title">Imóveis em Obra</h5>
                 <h2 class="card-text">{{ imoveis_em_obra.count }}</h2>
             </div>
