@@ -1,0 +1,137 @@
+body {
+    background: #F5F6F7;
+    color: #222;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.navbar, .bg-primary {
+    background: #06253D !important;
+    color: #fff !important;
+}
+
+.navbar .nav-link, .navbar-brand {
+    color: #fff !important;
+    font-weight: 500;
+}
+
+.navbar .nav-link.active, .navbar .nav-link:hover {
+    color: #CC8C5D !important;
+}
+
+footer {
+    background: #06253D;
+    color: #fff;
+}
+
+h1, h2, h3, h4, h5, h6, .card-title {
+    color: #06253D;
+}
+
+a, .link-primary {
+    color: #CC8C5D;
+    text-decoration: none;
+}
+a:hover, .link-primary:hover {
+    color: #a86b3e;
+    text-decoration: underline;
+}
+
+.btn-primary, .btn-info, .btn-success {
+    background: #CC8C5D;
+    border-color: #CC8C5D;
+    color: #fff;
+    font-weight: 500;
+    transition: background 0.2s, border 0.2s;
+}
+.btn-primary:hover, .btn-info:hover, .btn-success:hover {
+    background: #a86b3e;
+    border-color: #a86b3e;
+    color: #fff;
+}
+
+.btn-outline-primary {
+    color: #CC8C5D;
+    border-color: #CC8C5D;
+    background: transparent;
+}
+.btn-outline-primary:hover {
+    background: #CC8C5D;
+    color: #fff;
+    border-color: #CC8C5D;
+}
+
+.btn-warning {
+    background: #F5F6F7;
+    border-color: #CC8C5D;
+    color: #CC8C5D;
+}
+.btn-warning:hover {
+    background: #CC8C5D;
+    color: #fff;
+    border-color: #CC8C5D;
+}
+
+.card {
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(6,37,61,0.04);
+}
+
+.card-header {
+    background: #F5F6F7;
+    color: #06253D;
+    border-bottom: 1px solid #e9ecef;
+}
+
+/* Cards do dashboard: manter fundo branco e letra preta */
+.card.text-white.bg-primary,
+.card.text-white.bg-success,
+.card.text-white.bg-info {
+    background: #fff !important;
+    color: #222 !important;
+    border: 1px solid #e9ecef;
+}
+.card.text-white.bg-primary .card-title,
+.card.text-white.bg-success .card-title,
+.card.text-white.bg-info .card-title,
+.card.text-white.bg-primary .card-text,
+.card.text-white.bg-success .card-text,
+.card.text-white.bg-info .card-text {
+    color: #222 !important;
+}
+
+.alert-info {
+    background: #e9ecef;
+    color: #06253D;
+    border-color: #CC8C5D;
+}
+
+.breadcrumb {
+    background: #F5F6F7;
+    border-radius: 8px;
+}
+
+.list-group-item.active, .list-group-item-action.active {
+    background: #CC8C5D;
+    border-color: #CC8C5D;
+    color: #fff;
+}
+.list-group-item-action:hover {
+    background: #CC8C5D;
+    color: #fff;
+}
+
+.progress-bar {
+    background: #CC8C5D !important;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #CC8C5D;
+}
+::-webkit-scrollbar-track {
+    background: #F5F6F7;
+}
+::-webkit-scrollbar {
+    width: 8px;
+}
